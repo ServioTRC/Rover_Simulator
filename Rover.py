@@ -5,6 +5,8 @@ Y_CENTER_MOTHER_SHIP = 48
 SAMPLE = 5
 OBSTACLE = 1
 JUMPS = 1
+TW0_TRACES = 8
+ONE_TRACE = 7
 
 
 class Rover:
@@ -34,9 +36,17 @@ class Rover:
         else:
             evaded = self.evade_obstacle_directed(data)
             if data[self.position_y][self.position_x] == SAMPLE:
-                data[self.position_y][self.position_x] = 7
+                data[self.position_y][self.position_x] = TW0_TRACES
                 self.has_rock = True
                 traces = True
+            elif data[self.position_y][self.position_x] == TW0_TRACES:
+                print(f"Found traces {data[self.position_y][self.position_x]}")
+                data[self.position_y][self.position_x] -= 1
+                self.change_direction(prev_position_x, prev_position_y)
+            elif data[self.position_y][self.position_x] == ONE_TRACE:
+                print(f"Found traces {data[self.position_y][self.position_x]}")
+                data[self.position_y][self.position_x] = 0
+                self.change_direction(prev_position_x, prev_position_y)
             if evaded:
                 self.previous_steps.append((self.position_x, self.position_y))
             return (prev_position_x, prev_position_y), (self.position_x, self.position_y), traces
@@ -45,6 +55,7 @@ class Rover:
         if len(self.previous_steps) > 1:
             self.position_x, self.position_y = self.previous_steps.pop()
         else:
+            self.preference = randint(0, 2)
             if self.has_rock:
                 print(f"{self.name} home and leaved sample")
                 self.SAMPLE_NUMBER -= 1
@@ -56,10 +67,10 @@ class Rover:
         return self.position_x, self.position_y
 
     def evade_obstacle_directed(self, data):
-        if self.preference == 0: # up
+        if self.preference == 0:    # up
             if not self.move_front(data):
                 return self.evade_obstacle_random(data)
-        else: # right
+        else:   # right
             if not self.move_right(data):
                 return self.evade_obstacle_random(data)
         return True
@@ -108,6 +119,14 @@ class Rover:
             self.position_y += JUMPS
             return True
         return False
+
+    def change_direction(self, previous_x, previous_y):
+        if previous_x != self.position_x:
+            print("changed direction in x")
+            self.preference = 1
+        elif previous_y != self.position_y:
+            print("changed direction in y")
+            self.preference = 0
 
 # Reducir el nivel de aleatoriedad de movimientos, mover al lugar mas alejado
 # Siguen la misma direccion excepto cuando encuentran las migajas
