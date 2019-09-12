@@ -9,15 +9,16 @@ from Rover import (Rover, TWO_TRACES, ONE_TRACE,
 class Simulation:
 
     def __init__(self):
+        self.sample_number = [5]
         self.data = genfromtxt('map.csv', delimiter=',')
         self.size = len(self.data)
         self.cmap = colors.ListedColormap(['white', 'brown', 'blue', 'orange', 'yellow', 'green', 'black', 'black'])
         self.bounds = [0, 1, 2, 3, 4, 5, 6, 7, 8]
         self.norm = colors.BoundaryNorm(self.bounds, self.cmap.N)
         self.fig, self.ax = plt.subplots()
-        self.rovers = [Rover(self.size, self.size, "guille"), Rover(self.size, self.size, "erick"),
-                       Rover(self.size, self.size, "sergio"), Rover(self.size, self.size, "adrian"),
-                       Rover(self.size, self.size, "pablo"), Rover(self.size, self.size, "yuso")]
+        self.rovers = [Rover(self.size, self.size, "guille", self.sample_number), Rover(self.size, self.size, "erick", self.sample_number),
+                       Rover(self.size, self.size, "sergio", self.sample_number), Rover(self.size, self.size, "adrian", self.sample_number),
+                       Rover(self.size, self.size, "pablo", self.sample_number), Rover(self.size, self.size, "yuso", self.sample_number)]
 
     def draw_rovers(self):
         for rover in self.rovers:

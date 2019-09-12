@@ -10,13 +10,12 @@ ONE_TRACE = 7
 EMPTY = 0
 MOTHER_SHIP = 2
 ROVER_MARK = 3
+MAX_STEP = 1
 
 
 class Rover:
 
-    SAMPLE_NUMBER = 20
-
-    def __init__(self, x_limit, y_limit, name):
+    def __init__(self, x_limit, y_limit, name, sample_number):
         self.has_rock = False
         self.name = name
         self.position_x = X_CENTER_MOTHER_SHIP
@@ -28,6 +27,7 @@ class Rover:
         self.preference = randint(0, 2)
         self.repeated = 0
         self.comming_home = False
+        self.sample_number = sample_number
 
     def change_position(self, data):
         prev_position_x, prev_position_y = self.position_x, self.position_y
@@ -36,11 +36,11 @@ class Rover:
             return (prev_position_x, prev_position_y), (self.return_home()), traces
         else:
             self.steps += JUMPS
-            if self.steps > 5:
+            if self.steps > MAX_STEP:
                 self.steps = 0
-                evaded = self.evade_obstacle_directed(data)
-            else:
                 evaded = self.evade_obstacle_random(data)
+            else:
+                evaded = self.evade_obstacle_directed(data)
             if data[self.position_y][self.position_x] == SAMPLE:
                 data[self.position_y][self.position_x] = TWO_TRACES
                 self.has_rock = True
@@ -63,11 +63,12 @@ class Rover:
         else:
             self.preference = randint(0, 2)
             if self.has_rock:
-                print(f"{self.name} home and leaved sample")
-                self.SAMPLE_NUMBER -= 1
-                if self.SAMPLE_NUMBER <= 0:
-                    raise AttributeError("No more samples")
+                self.sample_number[0] -= 1
+                print(f"{self.name} home and leaved sample. Missig to find {self.sample_number[0]}")
+                if self.sample_number[0] <= 0:
+                    raise AttributeError("All samples were found")
                 self.has_rock = False
+                self.preference = randint(0, 2)
             self.comming_home = False
             self.position_x, self.position_y = X_CENTER_MOTHER_SHIP, Y_CENTER_MOTHER_SHIP
         return self.position_x, self.position_y
