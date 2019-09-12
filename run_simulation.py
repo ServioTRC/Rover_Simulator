@@ -5,53 +5,60 @@ from matplotlib.animation import FuncAnimation
 from Rover import (Rover, TWO_TRACES, ONE_TRACE,
                    EMPTY, MOTHER_SHIP, ROVER_MARK)
 
-data = genfromtxt('map.csv', delimiter=',')
-size = len(data)
-cmap = colors.ListedColormap(['white', 'brown', 'blue', 'orange', 'yellow', 'green', 'black', 'black'])
-bounds = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-norm = colors.BoundaryNorm(bounds, cmap.N)
-fig, ax = plt.subplots()
-rovers = [Rover(size, size, "guille"), Rover(size, size, "erick"),
-          Rover(size, size, "sergio"), Rover(size, size, "adrian"),
-          Rover(size, size, "pablo"), Rover(size, size, "yuso")]
+
+class Simulation:
+
+    def __init__(self):
+        self.data = genfromtxt('map.csv', delimiter=',')
+        self.size = len(self.data)
+        self.cmap = colors.ListedColormap(['white', 'brown', 'blue', 'orange', 'yellow', 'green', 'black', 'black'])
+        self.bounds = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        self.norm = colors.BoundaryNorm(self.bounds, self.cmap.N)
+        self.fig, self.ax = plt.subplots()
+        self.rovers = [Rover(self.size, self.size, "guille"), Rover(self.size, self.size, "erick"),
+                       Rover(self.size, self.size, "sergio"), Rover(self.size, self.size, "adrian"),
+                       Rover(self.size, self.size, "pablo"), Rover(self.size, self.size, "yuso")]
+
+    def draw_rovers(self):
+        for rover in self.rovers:
+            prev, actual, traces = rover.change_position(self.data)
+            prev_x, prev_y = prev
+            x, y = actual
+            print(rover.name, x, y)
+            if traces or self.data[y][x] == ONE_TRACE:
+                self.data[y][x] = ONE_TRACE
+            elif traces or self.data[y][x] == TWO_TRACES:
+                self.data[y][x] = TWO_TRACES
+            if not traces and self.data[y][x] != TWO_TRACES and self.data[y][x] != ONE_TRACE:
+                self.data[y][x] = ROVER_MARK
+            if rover.inside_mother(prev_x, prev_y):
+                self.data[prev_y][prev_x] = MOTHER_SHIP
+            elif self.data[prev_y][prev_x] == ONE_TRACE:
+                self.data[prev_y][prev_x] = ONE_TRACE
+            elif self.data[prev_y][prev_x] == TWO_TRACES:
+                self.data[prev_y][prev_x] = TWO_TRACES
+            else:
+                self.data[prev_y][prev_x] = EMPTY
+
+    def update(self, frame_number):
+        self.ax.clear()
+        self.ax.imshow(self.data, cmap=self.cmap, norm=self.norm)
+        self.ax.tick_params(axis='both',
+                            which='both',
+                            bottom=False,
+                            top=False,
+                            labelbottom=False,
+                            labelleft=False)
+        self.draw_rovers()
+
+    def run_simulation(self):
+        try:
+            animation = FuncAnimation(self.fig, self.update)
+            plt.show()
+        except AttributeError:
+            print("All samples were found")
 
 
-def draw_rovers():
-    for rover in rovers:
-        prev, actual, traces = rover.change_position(data)
-        prev_x, prev_y = prev
-        x, y = actual
-        print(rover.name, x, y)
-        if traces or data[y][x] == ONE_TRACE:
-            data[y][x] = ONE_TRACE
-        elif traces or data[y][x] == TWO_TRACES:
-            data[y][x] = TWO_TRACES
-        if not traces and data[y][x] != TWO_TRACES and data[y][x] != ONE_TRACE:
-            data[y][x] = ROVER_MARK
-        if rover.inside_mother(prev_x, prev_y):
-            data[prev_y][prev_x] = MOTHER_SHIP
-        elif data[prev_y][prev_x] == ONE_TRACE:
-            data[prev_y][prev_x] = ONE_TRACE
-        elif data[prev_y][prev_x] == TWO_TRACES:
-            data[prev_y][prev_x] = TWO_TRACES
-        else:
-            data[prev_y][prev_x] = EMPTY
-
-
-def update(frame_number):
-    ax.clear()
-    ax.imshow(data, cmap=cmap, norm=norm)
-    ax.tick_params(axis='both',
-                   which='both',
-                   bottom=False,
-                   top=False,
-                   labelbottom=False,
-                   labelleft=False)
-    draw_rovers()
-
-
-try:
-    animation = FuncAnimation(fig, update)
-    plt.show()
-except AttributeError:
-    pass
+if __name__ == "__main__":
+    simu = Simulation()
+    simu.run_simulation()
