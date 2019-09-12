@@ -5,19 +5,20 @@ Y_CENTER_MOTHER_SHIP = 48
 SAMPLE = 5
 OBSTACLE = 1
 JUMPS = 1
-TW0_TRACES = 8
+TWO_TRACES = 8
 ONE_TRACE = 7
+EMPTY = 0
+MOTHER_SHIP = 2
+ROVER_MARK = 3
 
 
 class Rover:
 
-    SAMPLE_NUMBER = 11
+    SAMPLE_NUMBER = 20
 
     def __init__(self, x_limit, y_limit, name):
         self.has_rock = False
         self.name = name
-        self.origin_path = []
-        self.traces_number = 2
         self.position_x = X_CENTER_MOTHER_SHIP
         self.position_y = Y_CENTER_MOTHER_SHIP
         self.previous_steps = [(X_CENTER_MOTHER_SHIP, Y_CENTER_MOTHER_SHIP)]
@@ -34,18 +35,23 @@ class Rover:
         if self.has_rock or self.comming_home:
             return (prev_position_x, prev_position_y), (self.return_home()), traces
         else:
-            evaded = self.evade_obstacle_directed(data)
+            self.steps += JUMPS
+            if self.steps > 5:
+                self.steps = 0
+                evaded = self.evade_obstacle_directed(data)
+            else:
+                evaded = self.evade_obstacle_random(data)
             if data[self.position_y][self.position_x] == SAMPLE:
-                data[self.position_y][self.position_x] = TW0_TRACES
+                data[self.position_y][self.position_x] = TWO_TRACES
                 self.has_rock = True
                 traces = True
-            elif data[self.position_y][self.position_x] == TW0_TRACES:
+            elif data[self.position_y][self.position_x] == TWO_TRACES:
                 print(f"Found traces {data[self.position_y][self.position_x]}")
-                data[self.position_y][self.position_x] -= 1
+                data[self.position_y][self.position_x] = ONE_TRACE
                 self.change_direction(prev_position_x, prev_position_y)
             elif data[self.position_y][self.position_x] == ONE_TRACE:
                 print(f"Found traces {data[self.position_y][self.position_x]}")
-                data[self.position_y][self.position_x] = 0
+                data[self.position_y][self.position_x] = EMPTY
                 self.change_direction(prev_position_x, prev_position_y)
             if evaded:
                 self.previous_steps.append((self.position_x, self.position_y))
@@ -128,5 +134,5 @@ class Rover:
             print("changed direction in y")
             self.preference = 0
 
-# Reducir el nivel de aleatoriedad de movimientos, mover al lugar mas alejado
-# Siguen la misma direccion excepto cuando encuentran las migajas
+    def inside_mother(self, x, y):
+        return x == X_CENTER_MOTHER_SHIP and y == Y_CENTER_MOTHER_SHIP

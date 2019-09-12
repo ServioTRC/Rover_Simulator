@@ -2,23 +2,18 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 from numpy import genfromtxt
 from matplotlib.animation import FuncAnimation
-from Rover import Rover
+from Rover import (Rover, TWO_TRACES, ONE_TRACE,
+                   EMPTY, MOTHER_SHIP, ROVER_MARK)
 
 data = genfromtxt('map.csv', delimiter=',')
 size = len(data)
-# create discrete colormap
 cmap = colors.ListedColormap(['white', 'brown', 'blue', 'orange', 'yellow', 'green', 'black', 'black'])
-bounds = [0, 1, 2, 3, 4, 5, 6, 7, 8] # Intervalos para cada uno de lo colorres 0-1 rojo, 1-2 azul
+bounds = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 norm = colors.BoundaryNorm(bounds, cmap.N)
 fig, ax = plt.subplots()
-
-
-rovers = [Rover(size, size, "guille"), Rover(size, size, "erick"), Rover(size, size, "sergio"), Rover(size, size, "adrian")]
-# rovers = [Rover(size, size, "guille")]
-
-
-def inside_mother(x, y):
-    return x == 1 and y == 48
+rovers = [Rover(size, size, "guille"), Rover(size, size, "erick"),
+          Rover(size, size, "sergio"), Rover(size, size, "adrian"),
+          Rover(size, size, "pablo"), Rover(size, size, "yuso")]
 
 
 def draw_rovers():
@@ -27,20 +22,20 @@ def draw_rovers():
         prev_x, prev_y = prev
         x, y = actual
         print(rover.name, x, y)
-        if traces or data[y][x] == 7 or data[y][x] == 8:
-            data[y][x] = 7
-        elif traces or data[y][x] == 8:
-            data[y][x] = 8
+        if traces or data[y][x] == ONE_TRACE:
+            data[y][x] = ONE_TRACE
+        elif traces or data[y][x] == TWO_TRACES:
+            data[y][x] = TWO_TRACES
+        if not traces and data[y][x] != TWO_TRACES and data[y][x] != ONE_TRACE:
+            data[y][x] = ROVER_MARK
+        if rover.inside_mother(prev_x, prev_y):
+            data[prev_y][prev_x] = MOTHER_SHIP
+        elif data[prev_y][prev_x] == ONE_TRACE:
+            data[prev_y][prev_x] = ONE_TRACE
+        elif data[prev_y][prev_x] == TWO_TRACES:
+            data[prev_y][prev_x] = TWO_TRACES
         else:
-            data[y][x] = 3
-        if inside_mother(prev_x, prev_y):
-            data[prev_y][prev_x] = 2
-        elif data[prev_y][prev_x] == 7:
-            data[prev_y][prev_x] = 7
-        elif data[prev_y][prev_x] == 8:
-            data[prev_y][prev_x] = 8
-        else:
-            data[prev_y][prev_x] = 0
+            data[prev_y][prev_x] = EMPTY
 
 
 def update(frame_number):
