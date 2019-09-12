@@ -9,7 +9,7 @@ from Rover import (Rover, TWO_TRACES, ONE_TRACE,
 class Simulation:
 
     def __init__(self):
-        self.sample_number = [5]
+        self.sample_number = [20]
         self.data = genfromtxt('map.csv', delimiter=',')
         self.size = len(self.data)
         self.cmap = colors.ListedColormap(['white', 'brown', 'blue', 'orange', 'yellow', 'green', 'black', 'black'])
@@ -53,11 +53,8 @@ class Simulation:
         self.draw_rovers()
 
     def run_simulation(self):
-        try:
-            animation = FuncAnimation(self.fig, self.update)
-            plt.show()
-        except AttributeError:
-            print("All samples were found")
+        animation = FuncAnimation(self.fig, self.update)
+        plt.show()
 
 
 if __name__ == "__main__":

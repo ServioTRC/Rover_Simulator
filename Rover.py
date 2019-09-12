@@ -1,4 +1,5 @@
 from numpy.random import randint
+from matplotlib.pyplot import pause
 
 X_CENTER_MOTHER_SHIP = 1
 Y_CENTER_MOTHER_SHIP = 48
@@ -64,9 +65,11 @@ class Rover:
             self.preference = randint(0, 2)
             if self.has_rock:
                 self.sample_number[0] -= 1
-                print(f"{self.name} home and leaved sample. Missig to find {self.sample_number[0]}")
+                print(f"{self.name} home and leaved sample. Missing to find {self.sample_number[0]} samples")
                 if self.sample_number[0] <= 0:
-                    raise AttributeError("All samples were found")
+                    print("All samples found")
+                    pause(30)
+                    exit()
                 self.has_rock = False
                 self.preference = randint(0, 2)
             self.comming_home = False
