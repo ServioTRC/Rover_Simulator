@@ -47,11 +47,11 @@ class Rover:
                 self.has_rock = True
                 traces = True
             elif data[self.position_y][self.position_x] == TWO_TRACES:
-                print(f"Found traces {data[self.position_y][self.position_x]}")
+                print(f"Found traces at {data[self.position_y][self.position_x]}")
                 data[self.position_y][self.position_x] = ONE_TRACE
                 self.change_direction(prev_position_x, prev_position_y)
             elif data[self.position_y][self.position_x] == ONE_TRACE:
-                print(f"Found traces {data[self.position_y][self.position_x]}")
+                print(f"Found traces at {data[self.position_y][self.position_x]}")
                 data[self.position_y][self.position_x] = EMPTY
                 self.change_direction(prev_position_x, prev_position_y)
             if evaded:
@@ -65,7 +65,7 @@ class Rover:
             self.preference = randint(0, 2)
             if self.has_rock:
                 self.sample_number[0] -= 1
-                print(f"{self.name} home and leaved sample. Missing to find {self.sample_number[0]} samples")
+                print(f"{self.name} is home and leaved sample. Missing to find {self.sample_number[0]} samples")
                 if self.sample_number[0] <= 0:
                     print("All samples found")
                     pause(30)
