@@ -36,10 +36,5 @@ Simbology From The Map
 
 ![Empty Space Color](media/white.png) Empty space color, map value = `0`
 
-Customizing Simulation
-------
 
-
-General Description from the Actual Behavior
-------
 
