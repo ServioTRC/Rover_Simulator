@@ -14,7 +14,7 @@ ROVER_MARK = 3
 
 class Rover:
 
-    def __init__(self, x_limit, y_limit, name, sample_number, jumps=1, max_step_directed=1):
+    def __init__(self, x_limit, y_limit, name, sample_number, jumps=1, max_step_directed=1, alone=False):
         self.has_rock = False
         self.name = name
         self.position_x = X_CENTER_MOTHER_SHIP
@@ -29,6 +29,7 @@ class Rover:
         self.sample_number = sample_number
         self.jumps = jumps
         self.max_step_directed = max_step_directed
+        self.alone = alone
 
     def change_position(self, data):
         prev_position_x, prev_position_y = self.position_x, self.position_y
@@ -44,9 +45,10 @@ class Rover:
                 evaded = self.evade_obstacle_directed(data)
             if data[self.position_y][self.position_x] == SAMPLE:
                 print(f"{self.name} found sample at X:{self.position_x} Y:{self.position_y}")
-                data[self.position_y][self.position_x] = TWO_TRACES
+                if not self.alone:
+                    data[self.position_y][self.position_x] = TWO_TRACES
+                    traces = True
                 self.has_rock = True
-                traces = True
             elif data[self.position_y][self.position_x] == TWO_TRACES:
                 print(f"{self.name} found traces at X:{self.position_x} Y:{self.position_y}")
                 data[self.position_y][self.position_x] = ONE_TRACE
