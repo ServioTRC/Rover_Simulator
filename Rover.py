@@ -35,6 +35,9 @@ class Rover:
         prev_position_x, prev_position_y = self.position_x, self.position_y
         traces = False
         if self.has_rock or self.comming_home:
+            if not self.alone and not self.comming_home:
+                data[self.position_y][self.position_x] = TWO_TRACES
+                traces = True
             return (prev_position_x, prev_position_y), (self.return_home()), traces
         else:
             self.steps += self.jumps
@@ -74,7 +77,6 @@ class Rover:
                     pause(30)
                     exit()
                 self.has_rock = False
-                self.preference = randint(0, 2)
             self.comming_home = False
             self.position_x, self.position_y = X_CENTER_MOTHER_SHIP, Y_CENTER_MOTHER_SHIP
         return self.position_x, self.position_y
