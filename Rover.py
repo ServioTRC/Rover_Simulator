@@ -35,6 +35,7 @@ class Rover:
         prev_position_x, prev_position_y = self.position_x, self.position_y
         traces = False
         if self.has_rock or self.comming_home:
+            # Leaves two traces along its path to the mothership
             if not self.alone and not self.comming_home:
                 data[self.position_y][self.position_x] = TWO_TRACES
                 traces = True
@@ -43,19 +44,24 @@ class Rover:
             self.steps += self.jumps
             if self.steps > self.max_step_directed:
                 self.steps = 0
+                # Random movements
                 evaded = self.evade_obstacle_random(data)
             else:
+                # Directed movements
                 evaded = self.evade_obstacle_directed(data)
+            # Collects the sample and leaves two traces
             if data[self.position_y][self.position_x] == SAMPLE:
                 print(f"{self.name} found sample at X:{self.position_x} Y:{self.position_y}")
                 if not self.alone:
                     data[self.position_y][self.position_x] = TWO_TRACES
                     traces = True
                 self.has_rock = True
+            # Collects one trace from the path
             elif data[self.position_y][self.position_x] == TWO_TRACES:
                 print(f"{self.name} found traces at X:{self.position_x} Y:{self.position_y}")
                 data[self.position_y][self.position_x] = ONE_TRACE
                 self.change_direction(prev_position_x, prev_position_y)
+            # Collects one trace from the path
             elif data[self.position_y][self.position_x] == ONE_TRACE:
                 print(f"{self.name} found traces at X:{self.position_x} Y:{self.position_y}")
                 data[self.position_y][self.position_x] = EMPTY
